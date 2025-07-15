@@ -146,6 +146,13 @@ export const api = createApi({
         body: credentials,
       }),
     }),
+      resendOtp: builder.mutation<OtpResponse, {email: string}>({
+      query: ({email}) => ({
+        url: 'users/resend-otp',
+        method: 'POST',
+        body: {email},
+      }),
+    }),
     profile: builder.query<ProfileResponse, void>({
       query: () => ({
         url: 'users/me',
@@ -255,6 +262,7 @@ export const {
   useUpdateUserMutation,
   useUsersQuery,
   useUserDetailsQuery,
-  usePayoutMutation
+  usePayoutMutation,
+  useResendOtpMutation,
 
 } = api;

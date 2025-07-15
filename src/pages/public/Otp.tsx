@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import OTPInput from "react-otp-input"
 import Button from "../../components/common/Button"
-import { useVerifyOtpMutation } from "../../services/api"
+import { useResendOtpMutation, useVerifyOtpMutation } from "../../services/api"
 import { useLocation } from "react-router-dom"
 import { handleSetLocalStorage } from "../../utils/functions"
 import { setTokens } from "../../store/reducers/authReducer"
@@ -16,6 +16,7 @@ export default function Otp() {
     const [otp, setOtp] = useState("")
     const [resendTimer, setResendTimer] = useState(30)
     const [verifyOtp, { isLoading }] = useVerifyOtpMutation()
+    const [resendOtp, { isLoading: resendLoading }] = useResendOtpMutation()
     const handleChange = (otpValue: string) => {
         setOtp(otpValue)
     }
@@ -38,10 +39,19 @@ export default function Otp() {
             toast.error(customError.data.message || 'Some error occured');
         }
     };
-    const handleResend = () => {
-        // Simulate resend logic (e.g., API call)
-        toast.success("OTP resent!")
-        setResendTimer(30)
+    const handleResend = async () => {
+        try {
+            await resendOtp({ email: email.toString() }).unwrap();
+            toast.success("OTP resent!")
+
+        } catch (error: unknown) {
+            const customError = error as CustomError;
+            toast.error(customError.data.message || 'Some error occured');
+        } finally {
+            setResendTimer(30)
+        }
+
+
     }
 
     useEffect(() => {
@@ -85,13 +95,13 @@ export default function Otp() {
 
                 <div className="mt-4 text-center text-sm text-gray-600">
                     Didn’t receive the code?
-                    <span
+                  {!resendLoading &&  <span
                         onClick={resendTimer === 0 ? handleResend : undefined}
                         className={`ml-2 font-medium cursor-pointer ${resendTimer > 0 ? "text-gray-400 pointer-events-none" : "text-blue-600 hover:underline"
                             }`}
                     >
                         {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend OTP"}
-                    </span>
+                    </span>}
                 </div>
 
             </form>
