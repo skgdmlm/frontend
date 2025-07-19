@@ -56,7 +56,7 @@ function RegisterForm() {
             const customError = error as CustomError;
             let message = customError?.data?.message;
             if(customError?.data?.message == "Validation error!"){
-                message = customError?.data?.data?.errors?.[0]?.msg;
+                message = customError?.data?.data?.errors?.[0]?.msg ?? "Validation error";
             }
             toast.error(message || 'Some error occurred');
         }
