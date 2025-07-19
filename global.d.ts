@@ -9,6 +9,7 @@ declare global {
             success: boolean;
             error_code: number;
             message: string;
+            data?: {errors: unknown[]}
         };
     }
 

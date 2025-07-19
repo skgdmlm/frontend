@@ -9,12 +9,15 @@ const Profile = lazy(() => import('../pages/private/Profile'));
 const Transactions = lazy(() => import('../pages/private/Transactions'));
 const Users = lazy(() => import('../pages/private/Users'));
 const User = lazy(() => import('../pages/private/User'));
+const Invitations = lazy(() => import('../pages/private/Invitations'));
+
 
 function AdminRoutes() {
     return (
         <Routes>
             <Route element={<AdminLayout />}>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/invitations" element={<Invitations />} />
                 <Route path="/connections" element={<Connections />} />
                 <Route path="/income" element={<Income />} />
                 <Route path="/profile" element={<Profile />} />

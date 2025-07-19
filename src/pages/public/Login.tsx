@@ -4,9 +4,13 @@ import * as yup from "yup"
 import Input from "../../components/common/Input"
 import Button from "../../components/common/Button"
 import { Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useLoginMutation } from "../../services/api"
+import { useAppDispatch } from "../../store/store"
+import { setTokens } from "../../store/reducers/authReducer"
+import { handleSetLocalStorage } from "../../utils/functions"
+import { TokenType } from "../../utils/enums"
+import { Link } from "react-router-dom"
 
 const schema = yup.object({
     email: yup.string().email("Invalid email").required("Email is required"),
@@ -27,17 +31,18 @@ function LoginForm() {
         resolver: yupResolver(schema),
     })
 
-    const navigate = useNavigate();
-
+    
+    const dispatch = useAppDispatch();
     const [login, { isLoading }] = useLoginMutation();
 
     const onSubmit = async (data: LoginFormInputs) => {
         try {
-            await login({ email: data.email, password: data.password }).unwrap();
-            toast.success('Verify OTP');
-            navigate("/otp", {
-                state: {email: data.email}
-            })
+            const response = await login({ email: data.email, password: data.password }).unwrap();
+            dispatch(setTokens(response.data));
+            handleSetLocalStorage(TokenType.ACCESS_TOKEN, response.data.accessToken);
+            handleSetLocalStorage(TokenType.REFRESH_TOKEN, response.data.refreshToken);
+            toast.success('Login successfull');
+            window.location.replace("/")
         } catch (error: unknown) {
             const customError = error as CustomError;
             toast.error(customError.data.message || 'Some error occured');
@@ -73,6 +78,9 @@ function LoginForm() {
             >
                 Login
             </Button>
+            <Typography variant="body2" className="text-center text-gray-600">
+                Don't have an account? <Link to="/register" className="text-blue-500 hover:underline">Register</Link>   
+            </Typography>
         </form>
     )
 }

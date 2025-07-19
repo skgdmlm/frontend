@@ -7,12 +7,14 @@ const Connections = lazy(() => import('../pages/private/Connections'));
 const Income = lazy(() => import('../pages/private/Income'));
 const Profile = lazy(() => import('../pages/private/Profile'));
 const Transactions = lazy(() => import('../pages/private/Transactions'));
+const Invitations = lazy(() => import('../pages/private/Invitations'));
 
 function UserRoutes() {
     return (
         <Routes>
             <Route element={<UserLayout />}>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/invitations" element={<Invitations />} />
                 <Route path="/connections" element={<Connections />} />
                 <Route path="/income" element={<Income />} />
                 <Route path="/profile" element={<Profile />} />

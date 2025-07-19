@@ -1,30 +1,28 @@
 import { useState } from 'react';
 import { Button, MenuItem, Typography, Paper } from '@mui/material';
-import {UserRole} from "../../utils/enums"
+import { UserRole } from "../../utils/enums"
 import Input from '../../components/common/Input';
-import EmailChipInput from '../../components/common/EmailChipInput';
+
 import toast from 'react-hot-toast';
 import { useAppSelector } from '../../store/store';
 import { useInviteUsersMutation } from '../../services/api';
 
 export default function Dashboard() {
     const [badgeType, setBadgeType] = useState('green');
-    const [emails, setEmails] = useState<Array<string>>([]);
-const { user } = useAppSelector((root) => root.auth);
-const [invite, {isLoading}] = useInviteUsersMutation()
-    const sendReferral = async() => {
-        if (emails.length == 0) {
-            toast.error('Atleast 1 email is required')
-            return;
-        }
+    const [generatedPin, setGeneratedPin] = useState<string | null>(null);
+    const { user } = useAppSelector((root) => root.auth);
+    const [invite, { isLoading }] = useInviteUsersMutation()
+    const generatePin = async () => {
         try {
-             await invite({ emails, badgeType: isAdmin ? badgeType : undefined }).unwrap();
-                    toast.success('Referral send successfully.');
-                    setEmails([])
-                } catch (error: unknown) {
-                    const customError = error as CustomError;
-                    toast.error(customError.data.message || 'Some error occured');
-                }
+            const response = await invite({ badgeType: isAdmin ? badgeType : undefined }).unwrap();
+            toast.success('PIN generated successfully.');
+            setGeneratedPin(response.data.pin);
+
+            setTimeout(() => setGeneratedPin(null), 10000);
+        } catch (error: unknown) {
+            const customError = error as CustomError;
+            toast.error(customError.data.message || 'Some error occured');
+        }
     };
 
     const isAdmin = user?.role == UserRole.ADMIN
@@ -34,8 +32,7 @@ const [invite, {isLoading}] = useInviteUsersMutation()
                 <Typography variant="h5" className="font-bold">
                     Send Referral
                 </Typography>
-                <EmailChipInput emails={emails} setEmails={setEmails} />
-              {isAdmin &&  <Input
+                {isAdmin && <Input
                     select
                     label="Badge Type"
                     variant="outlined"
@@ -50,12 +47,16 @@ const [invite, {isLoading}] = useInviteUsersMutation()
                 <Button
                     variant="contained"
                     fullWidth
-                    onClick={sendReferral}
+                    onClick={generatePin}
                     loading={isLoading}
                 >
-                    Send Referral
+                    Generate PIN
                 </Button>
-
+                {generatedPin && (
+                    <Typography variant="h6" className="text-center text-green-700">
+                        Referral PIN: <strong>{generatedPin}</strong>
+                    </Typography>
+                )}
             </Paper>
         </div>
     );

@@ -60,14 +60,16 @@ enum Tags {
   User = 'user',
   Balance = 'balance'
 }
-type LoginResponse = ApiResponse<{ otp: number; }>;
+type LoginResponse = ApiResponse<{ accessToken: string; refreshToken: string }>;
 interface LoginRequest {
   email: string;
   password: string;
 }
 type RegisterResponse = ApiResponse<{ message: string }>;
 interface RegisterRequest {
-  token: string;
+  pin: string;
+  name: string;
+  email: string;
   password: string;
   confirmPassword: string;
 }
@@ -75,9 +77,17 @@ type ProfileResponse = ApiResponse<UserProfileData>;
 type OtpResponse = ApiResponse<{ accessToken: string; refreshToken: string }>;
 interface OtpRequest { otp: number; email: string };
 interface InviteRequest {
-  emails: string[]
   badgeType?: string
 }
+interface IReferrals extends BaseSchema {
+  pin: string;
+  referrerId: string;
+  badgeType?:BadgeType
+  isUsed: boolean;
+  usedBy?: string | null;
+  expiresAt?: Date;
+}
+type InviteResponse = IReferrals
 interface TreeNode {
   id: string,
   name: string,
@@ -159,7 +169,7 @@ export const api = createApi({
         method: 'GET'
       }),
     }),
-    inviteUsers: builder.mutation<void, InviteRequest>({
+    inviteUsers: builder.mutation<ApiResponse<InviteResponse>, InviteRequest>({
       query: (credentials) => ({
         url: 'users/invite',
         method: 'POST',
@@ -190,6 +200,16 @@ export const api = createApi({
     transactions: builder.query<ApiResponseList<Transaction>, { skip: number, limit: number }>({
       query: ({ skip, limit }) => ({
         url: 'transaction',
+        method: 'GET',
+        params:
+        {
+          skip, limit
+        }
+      }),
+    }),
+    invitations: builder.query<ApiResponseList<IReferrals>, { skip: number, limit: number }>({
+      query: ({ skip, limit }) => ({
+        url: 'referrals',
         method: 'GET',
         params:
         {
@@ -264,5 +284,6 @@ export const {
   useUserDetailsQuery,
   usePayoutMutation,
   useResendOtpMutation,
+  useInvitationsQuery
 
 } = api;
