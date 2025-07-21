@@ -78,11 +78,12 @@ type OtpResponse = ApiResponse<{ accessToken: string; refreshToken: string }>;
 interface OtpRequest { otp: number; email: string };
 interface InviteRequest {
   badgeType?: string
+  password: string;
 }
 interface IReferrals extends BaseSchema {
   pin: string;
   referrerId: string;
-  badgeType?:BadgeType
+  badgeType?: BadgeType
   isUsed: boolean;
   usedBy?: string | null;
   expiresAt?: Date;
@@ -156,11 +157,11 @@ export const api = createApi({
         body: credentials,
       }),
     }),
-      resendOtp: builder.mutation<OtpResponse, {email: string}>({
-      query: ({email}) => ({
+    resendOtp: builder.mutation<OtpResponse, { email: string }>({
+      query: ({ email }) => ({
         url: 'users/resend-otp',
         method: 'POST',
-        body: {email},
+        body: { email },
       }),
     }),
     profile: builder.query<ProfileResponse, void>({
@@ -182,18 +183,18 @@ export const api = createApi({
         method: 'GET'
       }),
     }),
-    totalCommission: builder.query<ApiResponse<number>, {id?: string}>({
-      query: ({id}) => ({
+    totalCommission: builder.query<ApiResponse<number>, { id?: string }>({
+      query: ({ id }) => ({
         url: 'commission/total',
         method: 'GET',
-        params: {id}
+        params: { id }
       }),
     }),
-    balance: builder.query<ApiResponse<number>, {id?: string}>({
-      query: ({id}) => ({
+    balance: builder.query<ApiResponse<number>, { id?: string }>({
+      query: ({ id }) => ({
         url: 'transaction/balance',
         method: 'GET',
-        params: {id}
+        params: { id }
       }),
       providesTags: [Tags.Balance]
     }),
@@ -234,14 +235,22 @@ export const api = createApi({
         method: 'GET',
       }),
     }),
-       updateUser: builder.mutation<void, Partial<IUser>>({
+    updateUser: builder.mutation<void, Partial<IUser>>({
       query: (credentials) => ({
-        url:  `users/${credentials._id}`,
+        url: `users/${credentials._id}`,
         method: 'PATCH',
         body: credentials,
       }),
     }),
-     users: builder.query<ApiResponseList<IUser>, { skip: number, limit: number, search?: string | null }>({
+    updatePassword: builder.mutation<void, { userId: string, password: string, confirmPassword: string }>({
+      query: (credentials) => ({
+        url: `users/reset-password`,
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+
+    users: builder.query<ApiResponseList<IUser>, { skip: number, limit: number, search?: string | null }>({
       query: ({ skip, limit, search }) => ({
         url: 'users',
         method: 'GET',
@@ -251,17 +260,17 @@ export const api = createApi({
         }
       }),
     }),
-     userDetails: builder.query<ApiResponse<IUser & { bankDetails: IBank }>, {id: string}>({
-      query: ({id}) => ({
-        url:  `users/${id}`,
+    userDetails: builder.query<ApiResponse<IUser & { bankDetails: IBank }>, { id: string }>({
+      query: ({ id }) => ({
+        url: `users/${id}`,
         method: 'GET',
       }),
     }),
-       payout: builder.mutation<void, {amount: number, userId: string}>({
-      query: ({amount,userId}) => ({
-        url:  `payout`,
+    payout: builder.mutation<void, { amount: number, userId: string }>({
+      query: ({ amount, userId }) => ({
+        url: `payout`,
         method: 'POST',
-        body: {amount, userId},
+        body: { amount, userId },
       }),
       invalidatesTags: [Tags.Balance]
     }),
@@ -284,6 +293,7 @@ export const {
   useUserDetailsQuery,
   usePayoutMutation,
   useResendOtpMutation,
-  useInvitationsQuery
+  useInvitationsQuery,
+  useUpdatePasswordMutation
 
 } = api;

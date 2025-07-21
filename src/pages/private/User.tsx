@@ -22,12 +22,14 @@ import {
   useBalanceQuery,
   usePayoutMutation,
   useTotalCommissionQuery,
+  useUpdatePasswordMutation,
   useUpdateUserMutation,
   useUserDetailsQuery,
 } from "../../services/api";
 import Loader from "../../components/common/Loader";
 import Input from "../../components/common/Input";
-
+import { useAppSelector } from "../../store/store";
+import { UserRole } from "../../utils/enums";
 type PersonalDetails = {
   name: string;
   email: string;
@@ -53,7 +55,7 @@ type CustomError = {
 
 export default function User() {
   const { id } = useParams();
-
+  const { user } = useAppSelector((root) => root.auth);
   const { data: balance, isLoading: balanceLoading } = useBalanceQuery({ id });
   const { data: totalIncome, isLoading: incomeLoading } = useTotalCommissionQuery({ id });
   const [updateUser, { isLoading: updateUserLoading }] = useUpdateUserMutation();
@@ -61,6 +63,7 @@ export default function User() {
 
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [makePayment, { isLoading: isPaying }] = usePayoutMutation();
+  const [resetPassword, { isLoading: resetPasswordLoading }] = useUpdatePasswordMutation();
 
   // Main User Form
   const {
@@ -115,6 +118,27 @@ export default function User() {
       })
     ),
   });
+  const {
+    register: resetPasswordRegister,
+    handleSubmit: resetPasswordSubmit,
+    reset: resetPasswordForm,
+    formState: { errors: resetPasswordErrors },
+  } = useForm<{ password: string, confirmPassword: string }>({
+    resolver: yupResolver(
+      yup.object({
+        password: yup.string()
+          .min(8, 'Password must be at least 8 characters')
+          .matches(/[A-Z]/, 'Must contain one uppercase letter')
+          .matches(/[a-z]/, 'Must contain one lowercase letter')
+          .matches(/\d/, 'Must contain one number')
+          .matches(/[@$!%*?&#]/, 'Must contain one special character')
+          .required('Required'),
+        confirmPassword: yup.string()
+          .oneOf([yup.ref('password')], 'Passwords must match')
+          .required('Required'),
+      }),
+    )
+  });
 
   useEffect(() => {
     if (data?.data) {
@@ -149,7 +173,7 @@ export default function User() {
 
   const handlePay = async ({ amount }: { amount: number }) => {
     try {
-      await makePayment({  amount, userId: id ?? "" }).unwrap();
+      await makePayment({ amount, userId: id ?? "" }).unwrap();
       toast.success("Payment successful");
       setPayDialogOpen(false);
       resetPayForm();
@@ -158,6 +182,17 @@ export default function User() {
       toast.error(customError?.data?.message || "Payment failed");
     }
   };
+  const handlePasswordReset = async ({ password, confirmPassword }: { password: string, confirmPassword: string }) => {
+    try {
+      await resetPassword({ userId: id ?? "", password, confirmPassword }).unwrap();
+      toast.success("Password reset successful");
+      resetPasswordForm();
+    } catch (error: unknown) {
+      const customError = error as CustomError;
+      toast.error(customError?.data?.message || "Reset password failed");
+    }
+  };
+  const isAdmin = user?.role ? (user?.role === UserRole.ADMIN) : true;
 
   if (isLoading) return <Loader />;
 
@@ -213,6 +248,7 @@ export default function User() {
                     {...field}
                     label="Name"
                     fullWidth
+                    disabled={!isAdmin}
                     error={!!errors.personal?.name}
                     helperText={errors.personal?.name?.message}
                   />
@@ -229,7 +265,6 @@ export default function User() {
                     {...field}
                     label="Email"
                     fullWidth
-                    disabled
                     error={!!errors.personal?.email}
                     helperText={errors.personal?.email?.message}
                   />
@@ -285,6 +320,46 @@ export default function User() {
           </Button>
         </Box>
       </form>
+      {
+        isAdmin && (
+          <form onSubmit={resetPasswordSubmit(handlePasswordReset)} className="p-4">
+            <Paper elevation={3} className="p-6 mb-6">
+              <Typography variant="h6" gutterBottom>
+                Reset Password
+              </Typography>
+
+              <Grid container spacing={2}>
+                <Input
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  error={!!resetPasswordErrors.password}
+                  helperText={resetPasswordErrors.password?.message}
+                  {...resetPasswordRegister("password")}
+                />
+                <Input
+                  label="Confirm Password"
+                  type="password"
+                  fullWidth
+                  error={!!resetPasswordErrors.confirmPassword}
+                  helperText={resetPasswordErrors.confirmPassword?.message}
+                  {...resetPasswordRegister("confirmPassword")}
+                />
+              </Grid>
+            </Paper>
+              <Box className="text-right">
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            loading={resetPasswordLoading}
+          >
+            Reset Password
+          </Button>
+        </Box>
+          </form>
+        )
+      }
 
       {/* Payment Dialog */}
       <Dialog open={payDialogOpen} onClose={() => setPayDialogOpen(false)} fullWidth maxWidth="xs">
@@ -296,7 +371,7 @@ export default function User() {
               label="Amount"
               fullWidth
               type="number"
-              
+
               error={!!payErrors.amount}
               helperText={payErrors.amount?.message}
             />

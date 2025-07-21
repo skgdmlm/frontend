@@ -8,6 +8,7 @@ const Income = lazy(() => import('../pages/private/Income'));
 const Profile = lazy(() => import('../pages/private/Profile'));
 const Transactions = lazy(() => import('../pages/private/Transactions'));
 const Invitations = lazy(() => import('../pages/private/Invitations'));
+const ResetPassword = lazy(() => import('../pages/private/ResetPassword'));
 
 function UserRoutes() {
     return (
@@ -18,6 +19,7 @@ function UserRoutes() {
                 <Route path="/connections" element={<Connections />} />
                 <Route path="/income" element={<Income />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/transactions" element={<Transactions />} />
             </Route>
             <Route path="*" element={<NotFound />} />
