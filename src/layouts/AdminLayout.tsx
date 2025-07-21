@@ -12,6 +12,7 @@ import { IconButton, Drawer } from "@mui/material";
 import { handleSessionExpire } from "../utils/functions";
 import { useAppDispatch } from "../store/store";
 import { removeUser, resetTokens } from "../store/reducers/authReducer";
+import LockResetIcon from '@mui/icons-material/LockReset';
 
 function SidebarContent({ handleLogout }: { handleLogout: () => void }) {
   const navItems = [
@@ -21,6 +22,7 @@ function SidebarContent({ handleLogout }: { handleLogout: () => void }) {
     { label: "Transactions", path: "/transactions", icon: <AccountBalanceIcon fontSize="small" /> },
     { label: "Income", path: "/income", icon: <AttachMoneyIcon fontSize="small" /> },
     { label: "Connections", path: "/connections", icon: <PeopleIcon fontSize="small" /> },
+    { label: "Reset Password", path: "/reset-password", icon: <LockResetIcon fontSize="small" htmlColor="currentColor" /> },
   ];
 
   return (
