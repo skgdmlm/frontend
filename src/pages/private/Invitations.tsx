@@ -2,8 +2,12 @@ import { DataGrid, type GridColDef, type GridPaginationModel  } from '@mui/x-dat
 import React from 'react';
 import { useInvitationsQuery } from '../../services/api';
 import { tableFormat } from '../../utils/dateTIme';
+import { useAppSelector } from '../../store/store';
+import { UserRole } from '../../utils/enums';
 
 export default function Transactions() {
+  const { user } = useAppSelector((root) => root.auth);
+      const isAdmin = user?.role === UserRole.ADMIN;
   const [pagination, setPagination] = React.useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
@@ -42,6 +46,17 @@ export default function Transactions() {
       valueFormatter: ({ value }) => tableFormat(value)
     },
   ];
+
+  if (isAdmin) {
+    columns.push({
+      field: "referrerId",
+      headerName: "Referrer",
+      width: 200,
+      valueGetter: (val: IUser) => {
+        return val?.name || val?.email || "N/A";
+      }
+    });
+  }
 
   return (
     <DataGrid

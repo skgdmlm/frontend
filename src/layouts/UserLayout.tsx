@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -16,12 +15,11 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 
 function SidebarContent({ handleLogout }: { handleLogout: () => void }) {
   const navItems = [
-        { label: "Dashboard", path: "/", icon: <DashboardIcon fontSize="small" htmlColor="currentColor" /> },
-        { label: "Invitations", path: "/invitations", icon: <PeopleIcon fontSize="small" htmlColor="currentColor" /> },
-        { label: "Connections", path: "/connections", icon: <PeopleIcon fontSize="small" htmlColor="currentColor" /> },
-        { label: "Transactions", path: "/transactions", icon: <AccountBalanceIcon fontSize="small" htmlColor="currentColor" /> },
-        { label: "Income", path: "/income", icon: <AttachMoneyIcon fontSize="small" htmlColor="currentColor" /> },
-        { label: "Profile", path: "/profile", icon: <AccountCircleIcon fontSize="small" htmlColor="currentColor" /> },
+    { label: "Connections", path: "/", icon: <PeopleIcon fontSize="small" htmlColor="currentColor" /> },
+    { label: "Transactions", path: "/transactions", icon: <AccountBalanceIcon fontSize="small" htmlColor="currentColor" /> },
+    { label: "Income", path: "/income", icon: <AttachMoneyIcon fontSize="small" htmlColor="currentColor" /> },
+    { label: "Invitations", path: "/invitations", icon: <PeopleIcon fontSize="small" htmlColor="currentColor" /> },
+    { label: "Profile", path: "/profile", icon: <AccountCircleIcon fontSize="small" htmlColor="currentColor" /> },
            { label: "Reset Password", path: "/reset-password", icon: <LockResetIcon fontSize="small" htmlColor="currentColor" /> },
     ]
 

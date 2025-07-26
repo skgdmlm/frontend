@@ -79,6 +79,7 @@ interface OtpRequest { otp: number; email: string };
 interface InviteRequest {
   badgeType?: string
   password: string;
+  user: string;
 }
 interface IReferrals extends BaseSchema {
   pin: string;
