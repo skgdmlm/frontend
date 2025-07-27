@@ -51,7 +51,7 @@ export default function Dashboard() {
     });
 
     useEffect(()=>{
-        let timeoutId: NodeJS.Timeout;
+        let timeoutId: ReturnType<typeof setTimeout>;
         if (generatedPin) {
             timeoutId = setTimeout(() => {
                 setSelectedUser(null);
