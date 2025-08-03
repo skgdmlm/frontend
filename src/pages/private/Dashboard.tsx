@@ -85,6 +85,11 @@ export default function Dashboard() {
         { field: "_id", headerName: "#", width: 70 },
         { field: "name", headerName: "Name", width: 150 },
         { field: "email", headerName: "Email", width: 170 },
+         { field: "phone", headerName: "Phone", width: 170, 
+        renderCell: ({ value }) => (
+          <span>{value ? value : '-'}</span>
+        ),
+    },
         { field: "badgeType", headerName: "Badge", width: 100 },
         {
             field: "active",

@@ -4,13 +4,14 @@ import * as yup from "yup"
 import Input from "../../components/common/Input"
 import Button from "../../components/common/Button"
 import { Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useRegisterMutation } from "../../services/api"
 import bg from "../../assets/jpg/5068978.jpg"
 
 const schema = yup.object({
     name: yup.string().min(2, 'Name must be at least 2 characters').required('Required'),
+    phone: yup.string().length(10, 'Phone must be of length 10').required('Required'),
     email: yup.string().email('Invalid email').required('Required'),
     pin: yup.string().length(6, 'PIN must be exactly 6 digits').required('Required'),
     password: yup.string()
@@ -28,6 +29,7 @@ const schema = yup.object({
 
 type RegisterFormInputs = {
     name: string
+    phone: string
     email: string
     pin: string
     password: string
@@ -55,7 +57,7 @@ function RegisterForm() {
         } catch (error: unknown) {
             const customError = error as CustomError;
             let message = customError?.data?.message;
-            if(customError?.data?.message == "Validation error!"){
+            if (customError?.data?.message == "Validation error!") {
                 message = customError?.data?.data?.errors?.[0]?.msg ?? "Validation error";
             }
             toast.error(message || 'Some error occurred');
@@ -79,6 +81,14 @@ function RegisterForm() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 {...register("email")}
+            />
+            <Input
+                label="Phone"
+                type="text"
+                fullWidth
+                error={!!errors.phone}
+                helperText={errors.phone?.message}
+                {...register("phone")}
             />
             <Input
                 label="Referral PIN"
@@ -114,6 +124,9 @@ function RegisterForm() {
             >
                 Register
             </Button>
+            <Typography variant="body2" className="text-center text-gray-600">
+                Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
+            </Typography>
         </form>
     )
 }

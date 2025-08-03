@@ -69,6 +69,7 @@ type RegisterResponse = ApiResponse<{ message: string }>;
 interface RegisterRequest {
   pin: string;
   name: string;
+  phone: string;
   email: string;
   password: string;
   confirmPassword: string;
