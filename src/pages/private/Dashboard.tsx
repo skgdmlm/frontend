@@ -82,7 +82,7 @@ export default function Dashboard() {
     });
 
     const columns: GridColDef[] = [
-        { field: "_id", headerName: "#", width: 70 },
+        { field: "userId", headerName: "#", width: 110 },
         { field: "name", headerName: "Name", width: 150 },
         { field: "email", headerName: "Email", width: 170 },
          { field: "phone", headerName: "Phone", width: 170, 

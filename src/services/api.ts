@@ -58,7 +58,8 @@ export const customBaseQuery: BaseQueryFn<
 };
 enum Tags {
   User = 'user',
-  Balance = 'balance'
+  Balance = 'balance',
+  Referrals = 'referrals',
 }
 type LoginResponse = ApiResponse<{ accessToken: string; refreshToken: string }>;
 interface LoginRequest {
@@ -178,6 +179,7 @@ export const api = createApi({
         method: 'POST',
         body: credentials,
       }),
+      invalidatesTags: [Tags.Balance]
     }),
     referralTree: builder.query<ApiResponse<ReferralTreeResponse>, void>({
       query: () => ({
@@ -219,6 +221,7 @@ export const api = createApi({
           skip, limit
         }
       }),
+     providesTags: [Tags.Balance]
     }),
     commissions: builder.query<ApiResponseList<Commission>, { skip: number, limit: number }>({
       query: ({ skip, limit }) => ({
