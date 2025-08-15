@@ -1,17 +1,11 @@
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
 export const tableFormat = (date: string | Date) => {
-  // Explicitly parse the date as UTC first
-  const utcDate = dayjs.utc(date);
+  // Create a Date object (handles both strings and Date objects)
+  const utcDate = new Date(date);
   
-  // Then convert to India timezone
-  const indiaDate = utcDate.tz('Asia/Kolkata');
+  // Apply IST offset (UTC+5:30) in minutes
+  const istOffsetMinutes = 330; // 5 hours * 60 + 30 minutes
+  const istDate = new Date(utcDate.getTime() + istOffsetMinutes * 60 * 1000);
   
-  // Format the date
-  return indiaDate.format('YYYY-MM-DD');
+  // Format as YYYY-MM-DD
+  return istDate.toISOString().split('T')[0];
 };
