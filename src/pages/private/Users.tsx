@@ -63,7 +63,7 @@ export default function Users() {
       field: "createdAt",
       headerName: "Date",
       width: 180,
-      valueFormatter: ({ value }) => tableFormat(value),
+      valueFormatter: ({ value }: {value: string}) => {console.log("value", value); return tableFormat(value)},
     },
   ];
 
