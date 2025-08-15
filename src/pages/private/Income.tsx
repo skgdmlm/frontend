@@ -48,7 +48,7 @@ export default function Income() {
       field: "createdAt",
       headerName: "Date",
       width: 180,
-      valueFormatter: ({ value }) => {
+      valueFormatter: (value) => {
         return tableFormat(value)
       }
     },

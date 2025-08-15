@@ -43,7 +43,7 @@ export default function Transactions() {
       field: "createdAt",
       headerName: "Date",
       width: 180,
-      valueFormatter: ({ value }) => tableFormat(value)
+      valueFormatter: (value) => tableFormat(value)
     },
   ];
 

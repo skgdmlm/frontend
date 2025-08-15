@@ -111,7 +111,7 @@ export default function Dashboard() {
             field: "createdAt",
             headerName: "Date",
             width: 180,
-            valueFormatter: ({ value }) => tableFormat(value),
+            valueFormatter: (value) => tableFormat(value),
         },
     ];
       const [dialogOpen, setDialogOpen] = useState(false);
